@@ -2,7 +2,7 @@
 
 Unearned is a planned experiment on reward hacking in code models trained with reinforcement learning (RL). A small C++ code model will be trained from scratch, fine-tuned on example solutions, and then trained further with rewards computed by running its code against tests. The experiment asks how much of that RL improvement is earned: how much still shows up on a separate, hardened evaluation with its own hidden tests and fuzzed inputs, which no training reward reads.
 
-The main comparison will keep the prompts, sampling settings, and optimizer steps the same across arms and change only the reward. A naive reward scores compilation and the visible tests. A tests-augmented reward adds hidden tests and fuzzed inputs, separate from those in the hardened evaluation. A gated reward takes the tests-augmented reward and scales it by the verdict of structural and coverage checks from a planned C++ extension of [Skeptic](https://github.com/mamadou-wane/skeptic), a verifier for coding-agent reward hacking. The question is whether the gate produces more earned capability than either alternative.
+The main comparison will keep the prompts, sampling settings, and optimizer steps the same across arms and change only the reward. A naive reward scores compilation and the visible tests. A tests-augmented reward adds hidden tests and fuzzed inputs, separate from those in the hardened evaluation. A gated reward takes the tests-augmented reward and scales it by the verdict of a planned experiment-local verifier in Unearned, using structural and coverage checks. The question is whether the gate produces more earned capability than either alternative.
 
 ## Status
 
