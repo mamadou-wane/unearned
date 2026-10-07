@@ -101,8 +101,9 @@ class RMSNorm(nn.Module):
 class RotaryPositionEmbedding(nn.Module):
     """Rotate adjacent coordinates of [batch, heads, sequence, head_dim].
 
-    Position p rotates pair i by p * theta**(-2*i/head_dim). Positions start
-    at zero on each forward; values are not rotated.
+    Position p rotates pair i by p * theta**(-2*i/head_dim). position_offset
+    is the nonnegative absolute position of the first input token; values are
+    not rotated. The uncached path defaults to position zero.
     """
 
     def __init__(self, head_dim: int, theta: float):
@@ -110,12 +111,17 @@ class RotaryPositionEmbedding(nn.Module):
         self.head_dim = head_dim
         self.theta = theta
 
-    def forward(self, x: Tensor) -> Tensor:
+    def forward(self, x: Tensor, position_offset: int = 0) -> Tensor:
+        if type(position_offset) is not int:
+            raise TypeError('position_offset must be an integer')
+        if position_offset < 0:
+            raise ValueError('position_offset must be nonnegative')
         frequency = self.theta ** (
             -torch.arange(0, self.head_dim, 2, device=x.device, dtype=x.dtype)
             / self.head_dim
         )
-        positions = torch.arange(x.shape[-2], device=x.device, dtype=x.dtype)
+        positions = torch.arange(position_offset, position_offset + x.shape[-2],
+                                 device=x.device, dtype=x.dtype)
         angles = positions[:, None] * frequency[None, :]
         cosine, sine = angles.cos(), angles.sin()
         even, odd = x[..., 0::2], x[..., 1::2]
