@@ -1,4 +1,5 @@
 [dependency-groups]
+model = ["torch==2.14.1", "numpy==2.5.3"]
 dev = ["pytest>=7"]
 
 [tool.pytest.ini_options]
